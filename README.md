@@ -35,7 +35,7 @@ The project uses Android Gradle Plugin 9.4.0 with built-in Kotlin, Gradle 9.6.0,
 gradle :app:assembleDebug
 ```
 
-GitHub Actions also builds a debug APK on every push.
+GitHub Actions builds a debug APK on every push and uploads it as the `CamDiss-debug` artifact.
 
 ## License
 
