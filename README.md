@@ -35,7 +35,24 @@ The project uses Android Gradle Plugin 9.4.0 with built-in Kotlin, Gradle 9.6.0,
 gradle :app:assembleDebug
 ```
 
-GitHub Actions builds a debug APK on every push and uploads it as the `CamDiss-debug` artifact.
+### Persistent APK signing
+
+CamDiss follows the same signing model used by Kirigram. A fixed keystore is restored only at build time from GitHub Actions Secrets. When the keystore is available, both `debug` and `release` variants use the same persistent signing identity.
+
+The required repository Secrets are:
+
+- `CAMDISS_KEYSTORE_BASE64`
+- `CAMDISS_KEYSTORE_PASSWORD`
+- `CAMDISS_KEY_ALIAS`
+- `CAMDISS_KEY_PASSWORD`
+
+The keystore file itself is never committed. Main-branch CI publishes an APK artifact only when all four Secrets are present. Before upload, `apksigner` verifies that the certificate SHA-256 digest is exactly:
+
+```text
+ed686a582e601d12760495d42b0e844ac89f79bfe939c3fd7c5d4853f87f8a5f
+```
+
+If signing Secrets are missing, CI only performs a debug compilation check and deliberately publishes no APK, preventing accidental distribution of an APK signed by a temporary runner key.
 
 ## License
 
