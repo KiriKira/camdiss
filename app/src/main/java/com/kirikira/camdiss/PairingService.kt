@@ -49,6 +49,7 @@ class PairingService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_START -> startConnectionFlow()
+            ACTION_WAIT_FOR_WIRELESS -> startWaitingForWirelessFlow()
             ACTION_REPLY -> {
                 val code = RemoteInput.getResultsFromIntent(intent)
                     ?.getCharSequence(REMOTE_INPUT_KEY)
@@ -79,24 +80,33 @@ class PairingService : Service() {
                     return@execute
                 }
             } catch (_: Throwable) {
-                // No authorised connection yet, or Wireless debugging is currently off.
-                // Fall through to the Settings-assisted discovery flow.
+                // Existing pairing could not be reused. Move to the Settings-assisted flow.
             } finally {
                 if (!adb.isConnected()) {
                     runCatching { adb.disconnect() }
                 }
             }
 
-            mainHandler.post { waitForWirelessDebugging() }
+            mainHandler.post { enterWaitingForWireless(startAsForeground = false) }
         }
     }
 
-    private fun waitForWirelessDebugging() {
+    private fun startWaitingForWirelessFlow() {
+        stopDiscovery()
+        enterWaitingForWireless(startAsForeground = true)
+    }
+
+    private fun enterWaitingForWireless(startAsForeground: Boolean) {
         FlowStateStore.write(this, FlowState(FlowStatus.WAITING_FOR_WIRELESS))
-        getSystemService(NotificationManager::class.java).notify(
-            NOTIFICATION_ID,
-            waitingForWirelessNotification(),
-        )
+        val notification = waitingForWirelessNotification()
+        if (startAsForeground) {
+            startForegroundCompat(notification)
+        } else {
+            getSystemService(NotificationManager::class.java).notify(
+                NOTIFICATION_ID,
+                notification,
+            )
+        }
         startConnectDiscovery()
         startPairingDiscovery()
     }
@@ -118,9 +128,8 @@ class PairingService : Service() {
                         applyAndVerify(adb)
                     }
                 } catch (_: Throwable) {
-                    // The TLS endpoint exists but this key is not authorised yet.
-                    // Keep listening: opening the system pairing dialog will trigger
-                    // SERVICE_TYPE_TLS_PAIRING and allow the user to enter a code.
+                    // TLS endpoint exists but this key is not authorised yet.
+                    // Keep listening for the pairing service.
                     runCatching { adb.disconnect() }
                 } finally {
                     connectAttemptInProgress.set(false)
@@ -216,11 +225,6 @@ class PairingService : Service() {
         stopSelf()
     }
 
-    /**
-     * Execute a command that is expected not to produce output. ADB shell v1 reports
-     * normal remote process termination by closing the stream, so stream closure here
-     * is success, not an IOException to surface to the user.
-     */
     private fun runShellAndWait(adb: CameraAdbManager, command: String) {
         val stream: AdbStream = adb.openStream("shell:$command")
         try {
@@ -236,11 +240,6 @@ class PairingService : Service() {
         }
     }
 
-    /**
-     * Read only the first line without calling InputStream.readBytes(). libadb's
-     * AdbStream throws "Stream closed." after the peer has normally sent CLSE, so
-     * polling available data avoids mistaking a normal shell EOF for a command error.
-     */
     private fun runShellForSingleLine(adb: CameraAdbManager, command: String): String {
         val stream: AdbStream = adb.openStream("shell:$command")
         val output = ByteArrayOutputStream()
@@ -424,6 +423,7 @@ class PairingService : Service() {
         private const val EXTRA_PORT = "port"
 
         private const val ACTION_START = "com.kirikira.camdiss.START"
+        private const val ACTION_WAIT_FOR_WIRELESS = "com.kirikira.camdiss.WAIT_FOR_WIRELESS"
         private const val ACTION_REPLY = "com.kirikira.camdiss.REPLY"
         private const val ACTION_STOP = "com.kirikira.camdiss.STOP"
 
@@ -439,6 +439,12 @@ class PairingService : Service() {
         fun start(context: Context) {
             context.startForegroundService(
                 Intent(context, PairingService::class.java).setAction(ACTION_START)
+            )
+        }
+
+        fun startWaitingForWireless(context: Context) {
+            context.startForegroundService(
+                Intent(context, PairingService::class.java).setAction(ACTION_WAIT_FOR_WIRELESS)
             )
         }
     }
