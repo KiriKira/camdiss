@@ -133,10 +133,7 @@ class MainActivity : ComponentActivity() {
 
     private fun startConnectionFlow() {
         // Do not try to infer Samsung's Wireless debugging switch from adb_wifi_enabled.
-        // On some One UI builds that Global value stays 1 after the UI switch is turned off.
-        // Start mDNS discovery first, then always open the Wireless debugging page immediately.
-        // If CamDiss is already paired and Wireless debugging is on, the connect service is
-        // discovered and reused automatically; otherwise the user can enable it on this page.
+        // Start discovery first, then always open the Wireless debugging page immediately.
         wirelessSettingsOpenedForRun = true
         PairingService.startWaitingForWireless(this)
         openWirelessDebugging()
@@ -264,7 +261,6 @@ private fun CamDissScreen(
 
                         FilledTonalButton(
                             onClick = onRun,
-                            enabled = !busy,
                             modifier = Modifier.fillMaxWidth(),
                         ) {
                             Text(
