@@ -132,21 +132,15 @@ class MainActivity : ComponentActivity() {
         ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
 
     private fun startConnectionFlow() {
-        if (isWirelessDebuggingEnabled()) {
-            PairingService.start(this)
-        } else {
-            // Do not wait for mDNS to time out when Wireless debugging is clearly off.
-            // Shizuku uses the same Global setting to decide whether ADB Wi-Fi is enabled.
-            wirelessSettingsOpenedForRun = true
-            PairingService.startWaitingForWireless(this)
-            openWirelessDebugging()
-        }
+        // Do not try to infer Samsung's Wireless debugging switch from adb_wifi_enabled.
+        // On some One UI builds that Global value stays 1 after the UI switch is turned off.
+        // Start mDNS discovery first, then always open the Wireless debugging page immediately.
+        // If CamDiss is already paired and Wireless debugging is on, the connect service is
+        // discovered and reused automatically; otherwise the user can enable it on this page.
+        wirelessSettingsOpenedForRun = true
+        PairingService.startWaitingForWireless(this)
+        openWirelessDebugging()
     }
-
-    private fun isWirelessDebuggingEnabled(): Boolean =
-        runCatching {
-            Settings.Global.getInt(contentResolver, "adb_wifi_enabled", 0) == 1
-        }.getOrDefault(false)
 
     private fun openWirelessDebugging() {
         val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
