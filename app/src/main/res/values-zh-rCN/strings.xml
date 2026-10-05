@@ -12,7 +12,7 @@
     <string name="status_success">已关闭强制快门声</string>
     <string name="status_error">无法关闭强制快门声</string>
     <string name="details_success">CSC 设置已确认为 0。将手机切到静音或振动模式即可无声拍照。</string>
-    <string name="permission_needed">需要通知和本地网络权限，才能在本机完成无线 ADB 配对。</string>
+    <string name="permission_needed">需要通知权限，以便在系统设置页面打开时直接输入无线 ADB 配对码。</string>
 
     <string name="notification_channel">无线 ADB 配对</string>
     <string name="notification_searching_title">等待配对窗口</string>
