@@ -119,9 +119,6 @@ class MainActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             add(Manifest.permission.POST_NOTIFICATIONS)
         }
-        if (Build.VERSION.SDK_INT >= 37) {
-            add(ACCESS_LOCAL_NETWORK)
-        }
     }
 
     private fun hasPermission(permission: String): Boolean =
@@ -137,10 +134,6 @@ class MainActivity : ComponentActivity() {
             FlowStateStore.write(this, state)
             flowState = state
         }
-    }
-
-    companion object {
-        private const val ACCESS_LOCAL_NETWORK = "android.permission.ACCESS_LOCAL_NETWORK"
     }
 }
 
