@@ -5,18 +5,21 @@
     <string name="action_disable">关闭强制快门声</string>
     <string name="action_run_again">重新执行</string>
     <string name="status_idle">就绪</string>
-    <string name="status_searching">请打开“无线调试”，然后点“使用配对码配对设备”。</string>
+    <string name="status_searching">正在检查已有的无线 ADB 配对…</string>
+    <string name="status_waiting_wireless">已打开“无线调试”设置。如果 CamDiss 已配对会自动连接；只有未配对时才需要点“使用配对码配对设备”。</string>
     <string name="status_code">已检测到配对窗口。请在通知栏输入 6 位配对码。</string>
     <string name="status_pairing">正在配对…</string>
     <string name="status_applying">已连接，正在应用设置…</string>
     <string name="status_success">已关闭强制快门声</string>
     <string name="status_error">无法关闭强制快门声</string>
     <string name="details_success">CSC 设置已确认为 0。将手机切到静音或振动模式即可无声拍照。</string>
-    <string name="permission_needed">需要通知权限，以便在系统设置页面打开时直接输入无线 ADB 配对码。</string>
+    <string name="permission_needed">需要通知权限；只有首次配对时才会通过通知栏输入无线 ADB 配对码。</string>
 
-    <string name="notification_channel">无线 ADB 配对</string>
-    <string name="notification_searching_title">等待配对窗口</string>
-    <string name="notification_searching_text">请打开“无线调试”，选择“使用配对码配对设备”。</string>
+    <string name="notification_channel">无线 ADB</string>
+    <string name="notification_searching_title">正在检查已有配对</string>
+    <string name="notification_searching_text">如果已经配对，将直接连接，不需要再次输入配对码。</string>
+    <string name="notification_waiting_wireless_title">等待无线 ADB</string>
+    <string name="notification_waiting_wireless_text">已配对会自动连接；未配对时请打开“使用配对码配对设备”。</string>
     <string name="notification_pair_found_title">已检测到配对窗口</string>
     <string name="notification_pair_found_text">请输入 6 位配对码。</string>
     <string name="notification_enter_code">输入配对码</string>
