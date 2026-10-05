@@ -31,8 +31,8 @@ android {
         applicationId = "com.kirikira.camdiss"
         minSdk = 30
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.1.1"
+        versionCode = 3
+        versionName = "0.1.2"
     }
 
     val persistentSigning = if (hasReleaseSigning) {
