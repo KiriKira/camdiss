@@ -21,7 +21,7 @@ The pairing interaction is intentionally similar to Shizuku Manager, but the ADB
 
 ## Notes
 
-- Android 11+ is required (`minSdk 30`).
+- Android 11+ is required (`minSdk 30`). Android 17 requires the system `ACCESS_LOCAL_NETWORK` runtime permission for local ADB discovery/connection.
 - Designed primarily for Samsung firmware where `csc_pref_camera_forced_shuttersound_key` is honored.
 - Disabling the *forced* shutter sound does not necessarily mute the shutter in normal sound mode. Use silent/vibrate mode when needed.
 - The ADB key is stored in the app's private internal storage. Clearing app data creates a new key and requires pairing again.
@@ -29,7 +29,7 @@ The pairing interaction is intentionally similar to Shizuku Manager, but the ADB
 
 ## Build
 
-The project uses Android Gradle Plugin 9.4.0, Gradle 9.6.0, Kotlin 2.4.10, and stable Compose Material 3 1.4.0.
+The project uses Android Gradle Plugin 9.4.0 with built-in Kotlin, Gradle 9.6.0, Compose Compiler 2.4.10, and stable Compose Material 3 1.4.0.
 
 ```bash
 gradle :app:assembleDebug

@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">CamDiss</string>
+    <string name="title">相机快门声</string>
+    <string name="subtitle">通过本机 Wireless ADB 关闭三星 CSC 强制快门声。</string>
+    <string name="action_disable">关闭强制快门声</string>
+    <string name="action_run_again">重新执行</string>
+    <string name="status_idle">就绪</string>
+    <string name="status_searching">请打开“无线调试”，然后点“使用配对码配对设备”。</string>
+    <string name="status_code">已检测到配对窗口。请在通知栏输入 6 位配对码。</string>
+    <string name="status_pairing">正在配对…</string>
+    <string name="status_applying">已连接，正在应用设置…</string>
+    <string name="status_success">已关闭强制快门声</string>
+    <string name="status_error">无法关闭强制快门声</string>
+    <string name="details_success">CSC 设置已确认为 0。将手机切到静音或振动模式即可无声拍照。</string>
+    <string name="permission_needed">需要通知和本地网络权限，才能在本机完成无线 ADB 配对。</string>
+
+    <string name="notification_channel">无线 ADB 配对</string>
+    <string name="notification_searching_title">等待配对窗口</string>
+    <string name="notification_searching_text">请打开“无线调试”，选择“使用配对码配对设备”。</string>
+    <string name="notification_pair_found_title">已检测到配对窗口</string>
+    <string name="notification_pair_found_text">请输入 6 位配对码。</string>
+    <string name="notification_enter_code">输入配对码</string>
+    <string name="notification_code_hint">6 位配对码</string>
+    <string name="notification_pairing_title">正在与本机配对…</string>
+    <string name="notification_applying_title">正在应用相机设置…</string>
+    <string name="notification_success_title">已关闭强制快门声</string>
+    <string name="notification_success_text">已验证：csc_pref_camera_forced_shuttersound_key = 0</string>
+    <string name="notification_failed_title">CamDiss 执行失败</string>
+    <string name="notification_stop">停止</string>
+</resources>

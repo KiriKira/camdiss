@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">CamDiss</string>
+    <string name="title">Camera shutter sound</string>
+    <string name="subtitle">Disable Samsung CSC forced shutter sound using local Wireless ADB.</string>
+    <string name="action_disable">Disable shutter sound</string>
+    <string name="action_run_again">Run again</string>
+    <string name="status_idle">Ready</string>
+    <string name="status_searching">Open Wireless debugging, then tap “Pair device with pairing code”.</string>
+    <string name="status_code">Pairing dialog detected. Enter the 6-digit code from the notification.</string>
+    <string name="status_pairing">Pairing…</string>
+    <string name="status_applying">Connected. Applying setting…</string>
+    <string name="status_success">Forced shutter sound disabled</string>
+    <string name="status_error">Couldn’t disable forced shutter sound</string>
+    <string name="details_success">The CSC setting is now 0. Put the phone in silent or vibrate mode for a silent shutter.</string>
+    <string name="permission_needed">Notification and local network permissions are required for on-device Wireless ADB pairing.</string>
+
+    <string name="notification_channel">Wireless ADB pairing</string>
+    <string name="notification_searching_title">Waiting for pairing dialog</string>
+    <string name="notification_searching_text">Open Wireless debugging and choose “Pair device with pairing code”.</string>
+    <string name="notification_pair_found_title">Pairing dialog detected</string>
+    <string name="notification_pair_found_text">Enter the 6-digit pairing code.</string>
+    <string name="notification_enter_code">Enter pairing code</string>
+    <string name="notification_code_hint">6-digit code</string>
+    <string name="notification_pairing_title">Pairing with this phone…</string>
+    <string name="notification_applying_title">Applying camera setting…</string>
+    <string name="notification_success_title">Shutter sound setting disabled</string>
+    <string name="notification_success_text">Verified: csc_pref_camera_forced_shuttersound_key = 0</string>
+    <string name="notification_failed_title">CamDiss failed</string>
+    <string name="notification_stop">Stop</string>
+</resources>
