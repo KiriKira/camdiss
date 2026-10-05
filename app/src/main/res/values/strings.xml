@@ -12,7 +12,7 @@
     <string name="status_success">Forced shutter sound disabled</string>
     <string name="status_error">Couldn’t disable forced shutter sound</string>
     <string name="details_success">The CSC setting is now 0. Put the phone in silent or vibrate mode for a silent shutter.</string>
-    <string name="permission_needed">Notification and local network permissions are required for on-device Wireless ADB pairing.</string>
+    <string name="permission_needed">Notification permission is required so the pairing code can be entered while Settings is open.</string>
 
     <string name="notification_channel">Wireless ADB pairing</string>
     <string name="notification_searching_title">Waiting for pairing dialog</string>
