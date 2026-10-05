@@ -34,8 +34,8 @@ jobs:
         with:
           gradle-version: '9.6.0'
 
-      - name: Restore persistent signing key
-        if: github.event_name != 'pull_request'
+      - name: Detect persistent signing configuration
+        id: signing
         shell: bash
         env:
           KEYSTORE_BASE64: ${{ secrets.CAMDISS_KEYSTORE_BASE64 }}
@@ -43,11 +43,21 @@ jobs:
           KEY_ALIAS: ${{ secrets.CAMDISS_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.CAMDISS_KEY_PASSWORD }}
         run: |
-          test -n "$KEYSTORE_BASE64"
-          test -n "$KEYSTORE_PASSWORD"
-          test -n "$KEY_ALIAS"
-          test -n "$KEY_PASSWORD"
+          if [ -n "$KEYSTORE_BASE64" ] && [ -n "$KEYSTORE_PASSWORD" ] && [ -n "$KEY_ALIAS" ] && [ -n "$KEY_PASSWORD" ]; then
+            echo 'available=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'available=false' >> "$GITHUB_OUTPUT"
+          fi
 
+      - name: Restore persistent signing key
+        if: github.event_name != 'pull_request' && steps.signing.outputs.available == 'true'
+        shell: bash
+        env:
+          KEYSTORE_BASE64: ${{ secrets.CAMDISS_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.CAMDISS_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.CAMDISS_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.CAMDISS_KEY_PASSWORD }}
+        run: |
           mkdir -p app/config
           printf '%s' "$KEYSTORE_BASE64" | base64 --decode > app/config/release.keystore
           {
@@ -56,17 +66,22 @@ jobs:
             printf 'RELEASE_KEY_PASSWORD=%s\n' "$KEY_PASSWORD"
           } > local.properties
 
+      - name: Warn when signing is unavailable
+        if: github.event_name != 'pull_request' && steps.signing.outputs.available != 'true'
+        run: |
+          echo '::warning::Persistent CamDiss signing secrets are not configured. Building only for validation; no APK will be published.'
+
       - name: Build
         shell: bash
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            gradle :app:assembleDebug --stacktrace
-          else
+          if [ "${{ github.event_name }}" != "pull_request" ] && [ "${{ steps.signing.outputs.available }}" = "true" ]; then
             gradle :app:assembleRelease --stacktrace
+          else
+            gradle :app:assembleDebug --stacktrace
           fi
 
       - name: Verify persistent signing certificate
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && steps.signing.outputs.available == 'true'
         shell: bash
         run: |
           APK=app/build/outputs/apk/release/app-release.apk
@@ -78,7 +93,7 @@ jobs:
           printf '%s  %s\n' "$(sha256sum "$APK" | awk '{print $1}')" "$(basename "$APK")" > app/build/outputs/apk/release/SHA256SUMS.txt
 
       - uses: actions/upload-artifact@v4
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && steps.signing.outputs.available == 'true'
         with:
           name: CamDiss-signed
           path: |
