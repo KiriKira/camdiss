@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: camdiss-${{ github.ref }}
@@ -84,20 +84,40 @@ jobs:
         if: github.event_name != 'pull_request' && steps.signing.outputs.available == 'true'
         shell: bash
         run: |
-          APK=app/build/outputs/apk/release/app-release.apk
+          OUT=app/build/outputs/apk/release
+          APK="$OUT/app-release.apk"
+          NAMED_APK="$OUT/CamDiss-v0.1.1.apk"
           APKSIGNER=/usr/local/lib/android/sdk/build-tools/36.0.0/apksigner
           test -f "$APK"
           "$APKSIGNER" verify --verbose --print-certs "$APK" | tee /tmp/camdiss-apksigner.txt
           CERT_SHA256="$(awk -F': ' '/certificate SHA-256 digest/ {print tolower($2); exit}' /tmp/camdiss-apksigner.txt)"
           test "$CERT_SHA256" = "ed686a582e601d12760495d42b0e844ac89f79bfe939c3fd7c5d4853f87f8a5f"
-          printf '%s  %s\n' "$(sha256sum "$APK" | awk '{print $1}')" "$(basename "$APK")" > app/build/outputs/apk/release/SHA256SUMS.txt
+          cp "$APK" "$NAMED_APK"
+          cd "$OUT"
+          sha256sum CamDiss-v0.1.1.apk > SHA256SUMS.txt
 
       - uses: actions/upload-artifact@v4
         if: github.event_name != 'pull_request' && steps.signing.outputs.available == 'true'
         with:
           name: CamDiss-signed
           path: |
-            app/build/outputs/apk/release/app-release.apk
+            app/build/outputs/apk/release/CamDiss-v0.1.1.apk
             app/build/outputs/apk/release/SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 90
+
+      - name: Publish GitHub Release
+        if: github.event_name == 'push' && steps.signing.outputs.available == 'true' && github.event.head_commit.message == 'Publish signed CamDiss v0.1.1'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.1.1
+          target_commitish: ${{ github.sha }}
+          name: CamDiss v0.1.1
+          body: |
+            First persistently signed CamDiss release.
+
+            Signing certificate SHA-256:
+            `ed686a582e601d12760495d42b0e844ac89f79bfe939c3fd7c5d4853f87f8a5f`
+          files: |
+            app/build/outputs/apk/release/CamDiss-v0.1.1.apk
+            app/build/outputs/apk/release/SHA256SUMS.txt
