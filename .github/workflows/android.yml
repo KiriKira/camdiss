@@ -86,7 +86,7 @@ jobs:
         run: |
           OUT=app/build/outputs/apk/release
           APK="$OUT/app-release.apk"
-          NAMED_APK="$OUT/CamDiss-v0.1.2.apk"
+          NAMED_APK="$OUT/CamDiss-v0.1.3.apk"
           APKSIGNER=/usr/local/lib/android/sdk/build-tools/36.0.0/apksigner
           test -f "$APK"
           "$APKSIGNER" verify --verbose --print-certs "$APK" | tee /tmp/camdiss-apksigner.txt
@@ -94,36 +94,35 @@ jobs:
           test "$CERT_SHA256" = "ed686a582e601d12760495d42b0e844ac89f79bfe939c3fd7c5d4853f87f8a5f"
           cp "$APK" "$NAMED_APK"
           cd "$OUT"
-          sha256sum CamDiss-v0.1.2.apk > SHA256SUMS.txt
+          sha256sum CamDiss-v0.1.3.apk > SHA256SUMS.txt
 
       - uses: actions/upload-artifact@v4
         if: github.event_name != 'pull_request' && steps.signing.outputs.available == 'true'
         with:
           name: CamDiss-signed
           path: |
-            app/build/outputs/apk/release/CamDiss-v0.1.2.apk
+            app/build/outputs/apk/release/CamDiss-v0.1.3.apk
             app/build/outputs/apk/release/SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 90
 
       - name: Publish GitHub Release
-        if: github.event_name == 'push' && steps.signing.outputs.available == 'true' && github.event.head_commit.message == 'Publish signed CamDiss v0.1.2'
+        if: github.event_name == 'push' && steps.signing.outputs.available == 'true' && github.event.head_commit.message == 'Publish signed CamDiss v0.1.3'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.2
+          tag_name: v0.1.3
           target_commitish: ${{ github.sha }}
-          name: CamDiss v0.1.2
+          name: CamDiss v0.1.3
           body: |
-            Fix Wireless ADB reuse and shell completion handling.
+            Fix immediate Wireless debugging navigation when it is disabled.
 
-            - Reuses an existing CamDiss Wireless ADB pairing without asking for a new pairing code.
-            - Opens Wireless debugging only when a direct connection is unavailable.
-            - Automatically reconnects when Wireless debugging becomes available.
-            - Treats normal ADB shell stream closure as command completion instead of a failure.
-            - Verifies csc_pref_camera_forced_shuttersound_key = 0 after applying it.
+            - Reads the same `adb_wifi_enabled` Global setting used by Shizuku Manager.
+            - If Wireless debugging is off, opens the Wireless debugging page immediately instead of waiting for an mDNS timeout.
+            - Starts connect/pair discovery before the Settings page opens, so an existing CamDiss pairing is reused as soon as Wireless debugging is enabled.
+            - Keeps the v0.1.2 stream-closure fix and existing-pairing reuse behavior.
 
             Signing certificate SHA-256:
             `ed686a582e601d12760495d42b0e844ac89f79bfe939c3fd7c5d4853f87f8a5f`
           files: |
-            app/build/outputs/apk/release/CamDiss-v0.1.2.apk
+            app/build/outputs/apk/release/CamDiss-v0.1.3.apk
             app/build/outputs/apk/release/SHA256SUMS.txt
