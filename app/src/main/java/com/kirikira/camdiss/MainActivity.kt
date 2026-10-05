@@ -52,10 +52,16 @@ import androidx.core.content.ContextCompat
 
 class MainActivity : ComponentActivity() {
     private var flowState by mutableStateOf(FlowState(FlowStatus.IDLE))
+    private var wirelessSettingsOpenedForRun = false
 
     private val statusReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            flowState = FlowStateStore.read(this@MainActivity)
+            val newState = FlowStateStore.read(this@MainActivity)
+            flowState = newState
+            if (newState.status == FlowStatus.WAITING_FOR_WIRELESS && !wirelessSettingsOpenedForRun) {
+                wirelessSettingsOpenedForRun = true
+                openWirelessDebugging()
+            }
         }
     }
 
@@ -63,7 +69,7 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.RequestMultiplePermissions()
     ) {
         if (requiredPermissions().all(::hasPermission)) {
-            launchPairingFlow()
+            startConnectionFlow()
         } else {
             val state = FlowState(
                 FlowStatus.ERROR,
@@ -107,11 +113,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun startFromUi() {
+        wirelessSettingsOpenedForRun = false
         val missing = requiredPermissions().filterNot(::hasPermission)
         if (missing.isNotEmpty()) {
             permissionsLauncher.launch(missing.toTypedArray())
         } else {
-            launchPairingFlow()
+            startConnectionFlow()
         }
     }
 
@@ -124,8 +131,11 @@ class MainActivity : ComponentActivity() {
     private fun hasPermission(permission: String): Boolean =
         ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
 
-    private fun launchPairingFlow() {
+    private fun startConnectionFlow() {
         PairingService.start(this)
+    }
+
+    private fun openWirelessDebugging() {
         val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
             putExtra(":settings:fragment_args_key", "toggle_adb_wireless")
         }
@@ -156,6 +166,7 @@ private fun CamDissScreen(
 ) {
     val busy = state.status in setOf(
         FlowStatus.SEARCHING,
+        FlowStatus.WAITING_FOR_WIRELESS,
         FlowStatus.CODE_REQUIRED,
         FlowStatus.PAIRING,
         FlowStatus.APPLYING,
@@ -267,6 +278,7 @@ private fun CamDissScreen(
 private fun stateTitle(status: FlowStatus): String = when (status) {
     FlowStatus.IDLE -> androidx.compose.ui.res.stringResource(R.string.status_idle)
     FlowStatus.SEARCHING -> androidx.compose.ui.res.stringResource(R.string.status_searching)
+    FlowStatus.WAITING_FOR_WIRELESS -> androidx.compose.ui.res.stringResource(R.string.status_waiting_wireless)
     FlowStatus.CODE_REQUIRED -> androidx.compose.ui.res.stringResource(R.string.status_code)
     FlowStatus.PAIRING -> androidx.compose.ui.res.stringResource(R.string.status_pairing)
     FlowStatus.APPLYING -> androidx.compose.ui.res.stringResource(R.string.status_applying)
