@@ -5,6 +5,7 @@ import android.content.Context
 enum class FlowStatus {
     IDLE,
     SEARCHING,
+    WAITING_FOR_WIRELESS,
     CODE_REQUIRED,
     PAIRING,
     APPLYING,
