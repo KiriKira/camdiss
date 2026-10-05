@@ -86,7 +86,7 @@ jobs:
         run: |
           OUT=app/build/outputs/apk/release
           APK="$OUT/app-release.apk"
-          NAMED_APK="$OUT/CamDiss-v0.1.4.apk"
+          NAMED_APK="$OUT/CamDiss-v0.1.5.apk"
           APKSIGNER=/usr/local/lib/android/sdk/build-tools/36.0.0/apksigner
           test -f "$APK"
           "$APKSIGNER" verify --verbose --print-certs "$APK" | tee /tmp/camdiss-apksigner.txt
@@ -94,36 +94,36 @@ jobs:
           test "$CERT_SHA256" = "ed686a582e601d12760495d42b0e844ac89f79bfe939c3fd7c5d4853f87f8a5f"
           cp "$APK" "$NAMED_APK"
           cd "$OUT"
-          sha256sum CamDiss-v0.1.4.apk > SHA256SUMS.txt
+          sha256sum CamDiss-v0.1.5.apk > SHA256SUMS.txt
 
       - uses: actions/upload-artifact@v4
         if: github.event_name != 'pull_request' && steps.signing.outputs.available == 'true'
         with:
           name: CamDiss-signed
           path: |
-            app/build/outputs/apk/release/CamDiss-v0.1.4.apk
+            app/build/outputs/apk/release/CamDiss-v0.1.5.apk
             app/build/outputs/apk/release/SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 90
 
       - name: Publish GitHub Release
-        if: github.event_name == 'push' && steps.signing.outputs.available == 'true' && github.event.head_commit.message == 'Publish signed CamDiss v0.1.4'
+        if: github.event_name == 'push' && steps.signing.outputs.available == 'true' && github.event.head_commit.message == 'Publish signed CamDiss v0.1.5'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.4
+          tag_name: v0.1.5
           target_commitish: ${{ github.sha }}
-          name: CamDiss v0.1.4
+          name: CamDiss v0.1.5
           body: |
-            Make Wireless debugging navigation deterministic.
+            Fix stale in-progress UI state locking the app.
 
-            - Always opens the Wireless debugging page immediately after the user taps Run.
-            - Starts ADB connect/pair mDNS discovery before opening Settings.
-            - Reuses an existing CamDiss pairing automatically when Wireless debugging is already enabled.
-            - Does not rely on Samsung's potentially stale `adb_wifi_enabled` value.
-            - Keeps the existing-pairing reuse and shell stream-closure fixes from v0.1.2/v0.1.3.
+            - Legacy transient states from older versions are automatically discarded after update.
+            - New transient flow states expire after 60 seconds instead of surviving forever after process death.
+            - The Run / Run again button is always enabled, so a stuck ADB flow can always be restarted manually.
+            - Keeps v0.1.4's deterministic behavior: tapping Run starts discovery and immediately opens Wireless debugging Settings.
+            - Keeps existing ADB pairing reuse and shell stream-closure fixes.
 
             Signing certificate SHA-256:
             `ed686a582e601d12760495d42b0e844ac89f79bfe939c3fd7c5d4853f87f8a5f`
           files: |
-            app/build/outputs/apk/release/CamDiss-v0.1.4.apk
+            app/build/outputs/apk/release/CamDiss-v0.1.5.apk
             app/build/outputs/apk/release/SHA256SUMS.txt
