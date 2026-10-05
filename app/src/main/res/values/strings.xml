@@ -5,18 +5,21 @@
     <string name="action_disable">Disable shutter sound</string>
     <string name="action_run_again">Run again</string>
     <string name="status_idle">Ready</string>
-    <string name="status_searching">Open Wireless debugging, then tap “Pair device with pairing code”.</string>
+    <string name="status_searching">Checking for an existing Wireless ADB pairing…</string>
+    <string name="status_waiting_wireless">Wireless debugging settings opened. If CamDiss is already paired it will connect automatically; otherwise choose “Pair device with pairing code”.</string>
     <string name="status_code">Pairing dialog detected. Enter the 6-digit code from the notification.</string>
     <string name="status_pairing">Pairing…</string>
     <string name="status_applying">Connected. Applying setting…</string>
     <string name="status_success">Forced shutter sound disabled</string>
     <string name="status_error">Couldn’t disable forced shutter sound</string>
     <string name="details_success">The CSC setting is now 0. Put the phone in silent or vibrate mode for a silent shutter.</string>
-    <string name="permission_needed">Notification permission is required so the pairing code can be entered while Settings is open.</string>
+    <string name="permission_needed">Notification permission is required so a pairing code can be entered if first-time pairing is needed.</string>
 
-    <string name="notification_channel">Wireless ADB pairing</string>
-    <string name="notification_searching_title">Waiting for pairing dialog</string>
-    <string name="notification_searching_text">Open Wireless debugging and choose “Pair device with pairing code”.</string>
+    <string name="notification_channel">Wireless ADB</string>
+    <string name="notification_searching_title">Checking existing pairing</string>
+    <string name="notification_searching_text">Already-paired devices connect directly; no pairing code is needed.</string>
+    <string name="notification_waiting_wireless_title">Waiting for Wireless ADB</string>
+    <string name="notification_waiting_wireless_text">Paired devices connect automatically. If needed, open “Pair device with pairing code”.</string>
     <string name="notification_pair_found_title">Pairing dialog detected</string>
     <string name="notification_pair_found_text">Enter the 6-digit pairing code.</string>
     <string name="notification_enter_code">Enter pairing code</string>
